@@ -145,7 +145,7 @@ export default function Home() {
           <a href="#skills" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Skills</a>
           <a href="#contact" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Contact</a>
           <button className="theme-toggle" onClick={toggleTheme} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+            {theme === 'dark' ? 'Light' : 'Dark'}
           </button>
         </div>
       </nav>

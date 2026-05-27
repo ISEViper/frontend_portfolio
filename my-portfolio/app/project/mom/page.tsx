@@ -672,9 +672,13 @@ export default function MoM_page() {
                         </div>
                         <div className="mom-modal-title">안내</div>
                         <div className="mom-modal-message">
-                          현재 웹 데모는 핵심 기능인 3DGS 렌더링 시연에 집중했습니다.
+                          실제 서비스 환경에서 안정적으로 구현을 완료한
                           <br />
-                          <span className="mom-modal-feature-highlight">&apos;{clickedFeature}&apos;</span>을 포함한 전체 서비스의 아키텍처를 직접 설계하고 구현한 경험을 바탕으로, 입사 후 즉시 전력감으로 기여하겠습니다.
+                          <span className="mom-modal-feature-highlight">&apos;{clickedFeature}&apos;</span> 기능입니다.
+                          <br />
+                          <span style={{ display: 'block', marginTop: '10px' }}>
+                            아키텍처 설계와 성능 최적화를 깊이 있게 고민했던 이 개발 경험을 실무 프로젝트에서 가치 있게 증명해 보이겠습니다.
+                          </span>
                         </div>
                         <button 
                           className="mom-modal-btn" 
