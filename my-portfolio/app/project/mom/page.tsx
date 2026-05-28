@@ -181,11 +181,9 @@ export default function MoM_page() {
                 </tbody>
               </table>
             </div>
-          </div>
 
-          <div className="detail-main detail-fade-up">
-            {/* 3. Frontend Engineering (기술적 기여 및 의사결정) */}
-            <div className="mom-detail-section" style={{ marginBottom: '40px' }}>
+            {/* Frontend Engineering (기술적 기여 및 의사결정) */}
+            <div className="mom-detail-section" style={{ marginTop: '40px' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)' }}>
                 Frontend Engineering (기술적 기여 및 의사결정)
               </h3>
@@ -227,8 +225,10 @@ export default function MoM_page() {
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* Interactive Preview가 Frontend Engineering 바로 하단에 위치 */}
+          <div className="detail-main detail-fade-up">
+            {/* Interactive Preview */}
             <div
               className="detail-preview"
               onMouseEnter={() => {
@@ -239,7 +239,7 @@ export default function MoM_page() {
                 if (cursorRef.current) cursorRef.current.style.display = 'block';
                 document.body.style.cursor = 'none';
               }}
-              style={{ marginTop: '20px' }}
+              style={{ marginTop: '0px' }}
             >
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)' }}>
                 Interactive Preview
@@ -288,7 +288,6 @@ export default function MoM_page() {
                         )}
                       </div>
 
-                      {/* ZoomSlider */}
                       <div className="mom-zoom-slider">
                         <button
                           className="mom-round-chip"
@@ -320,7 +319,6 @@ export default function MoM_page() {
                         </button>
                       </div>
 
-                      {/* RotationSlider */}
                       <div className="mom-rotation-slider">
                         <span className="mom-rot-label">0&deg;</span>
                         <input
@@ -409,7 +407,6 @@ export default function MoM_page() {
                         </div>
                       )}
 
-                      {/* 전체 신체 치수 리스트 */}
                       <div className="mom-card" style={{ padding: '0', overflow: 'hidden' }}>
                         <div
                           style={{ padding: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -458,21 +455,18 @@ export default function MoM_page() {
                         )}
                       </div>
 
-                      {/* AI 코멘트 타이틀 */}
                       <div style={{ marginTop: '32px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
                           <Sparkles size={18} color="#3b4ab3" strokeWidth={2.5} />
                           <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#111' }}>AI 코멘트</span>
                         </div>
 
-                        {/* AI Comment 큰 연보라색 카드 */}
                         <div className="mom-ai-container" style={{
                           backgroundColor: '#eff2fc',
                           borderRadius: '24px',
                           padding: '20px',
                           marginBottom: '20px'
                         }}>
-                          {/* AI 체형 분석 헤더 */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                             <div style={{
                               backgroundColor: '#3b4ab3',
@@ -492,7 +486,6 @@ export default function MoM_page() {
                             하체 근력 보강과 허리 관리가 우선이에요.
                           </div>
 
-                          {/* 1. 상체 카드 */}
                           <div className="mom-ai-subcard" style={{
                             backgroundColor: '#fff',
                             borderRadius: '16px',
@@ -514,7 +507,6 @@ export default function MoM_page() {
                               가슴 볼륨은 평균 수준이나, 어깨와 팔의 전반적인 근력 보강이 필요해요.
                             </div>
 
-                            {/* 수치 리스트 박스 */}
                             <div style={{ backgroundColor: '#f8f9fa', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
                                 <span style={{ fontWeight: '600', color: '#444', flexShrink: 0 }}>가슴둘레</span>
@@ -542,14 +534,12 @@ export default function MoM_page() {
                               </div>
                             </div>
 
-                            {/* 전구 팁 */}
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '12px', color: '#3b4ab3', lineHeight: '1.4' }}>
                               <Lightbulb size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
                               <span>가슴·등 중심의 기본 푸시/풀을 곁들이면 상체 라인이 좋아져요.</span>
                             </div>
                           </div>
 
-                          {/* 2. 코어 카드 */}
                           <div className="mom-ai-subcard" style={{
                             backgroundColor: '#fff',
                             borderRadius: '16px',
@@ -568,7 +558,6 @@ export default function MoM_page() {
                               허리 둘레가 평균보다 여유가 있어 코어 안정화와 생활습관 관리가 도움돼요.
                             </div>
 
-                            {/* 수치 리스트 박스 */}
                             <div style={{ backgroundColor: '#f8f9fa', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
                                 <span style={{ fontWeight: '600', color: '#444', flexShrink: 0 }}>허리둘레</span>
@@ -579,14 +568,12 @@ export default function MoM_page() {
                               </div>
                             </div>
 
-                            {/* 전구 팁 */}
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '12px', color: '#3b4ab3', lineHeight: '1.4' }}>
                               <Lightbulb size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
                               <span>식사 규칙화와 함께 코어 고정 동작을 꾸준히 해보세요.</span>
                             </div>
                           </div>
 
-                          {/* 3. 하체 카드 */}
                           <div className="mom-ai-subcard" style={{
                             backgroundColor: '#fff',
                             borderRadius: '16px',
@@ -605,7 +592,6 @@ export default function MoM_page() {
                               엉덩이 대비 허벅지·종아리 볼륨이 작아, 하체 근력과 근육량을 키우는 쪽이 좋아요.
                             </div>
 
-                            {/* 수치 리스트 박스 */}
                             <div style={{ backgroundColor: '#f8f9fa', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
                                 <span style={{ fontWeight: '600', color: '#444', flexShrink: 0 }}>엉덩이둘레</span>
@@ -632,14 +618,12 @@ export default function MoM_page() {
                               </div>
                             </div>
 
-                            {/* 전구 팁 */}
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '12px', color: '#3b4ab3', lineHeight: '1.4' }}>
                               <Lightbulb size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
                               <span>백스쿼트를 중심으로 하체 전면·후면을 함께 키워보세요.</span>
                             </div>
                           </div>
 
-                          {/* 4. 오늘의 추천 운동 카드 */}
                           <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', cursor: 'pointer', marginTop: '16px' }}
                                onClick={() => handleFeatureClick('추천 운동법 가이드')}
                                onMouseEnter={handleMouseEnter}
@@ -678,7 +662,6 @@ export default function MoM_page() {
                       <History className="mom-nav-icon" size={22} strokeWidth={2.5} />히스토리
                     </div>
 
-                    {/* 가운데 카메라 FAB의 침범을 막고 대칭 레이아웃을 형성하기 위한 Spacer */}
                     <div className="mom-nav-item spacer" style={{ visibility: 'hidden' }}></div>
 
                     <div className="mom-nav-item" onClick={() => handleFeatureClick('운동 분석')} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ cursor: 'pointer' }}>
@@ -689,7 +672,6 @@ export default function MoM_page() {
                     </div>
                   </div>
 
-                  {/* 데모 안내 모달 오버레이 */}
                   {demoModalOpen && (
                     <div className="mom-modal-overlay">
                       <div className="mom-modal-card">

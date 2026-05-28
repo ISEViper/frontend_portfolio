@@ -230,11 +230,9 @@ export default function SsukSsuk_page() {
                 </tbody>
               </table>
             </div>
-          </div>
 
-          <div className="detail-main detail-fade-up">
             {/* Frontend Engineering */}
-            <div className="ssuk-highlights-container" style={{ marginBottom: '40px' }}>
+            <div className="ssuk-highlights-container" style={{ marginTop: '40px' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
                 Frontend Engineering (기술적 기여 및 의사결정)
               </h3>
@@ -276,7 +274,9 @@ export default function SsukSsuk_page() {
                 ))}
               </div>
             </div>
+          </div>
 
+          <div className="detail-main detail-fade-up">
             {/* Interactive Preview */}
             <div
               className="detail-preview"
@@ -288,7 +288,7 @@ export default function SsukSsuk_page() {
                 if (cursorRef.current) cursorRef.current.style.display = 'block';
                 document.body.style.cursor = 'none';
               }}
-              style={{ marginTop: '20px' }}
+              style={{ marginTop: '0px' }}
             >
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)' }}>
                 Interactive Preview

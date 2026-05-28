@@ -730,3 +730,95 @@ footer { height: 100vh; display: flex; flex-direction: column; justify-content: 
   0% { opacity: 0; transform: translate(-50%, 15px); }
   100% { opacity: 1; transform: translate(-50%, 0); }
 }
+
+/* ============================================
+   Shared Sidebar Styles (all project pages)
+   Defined globally to prevent style-breaking
+   on direct page visits / hard refreshes.
+   ============================================ */
+
+/* Sidebar Features Table */
+.sidebar-features-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.sidebar-features-table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .sidebar-features-table tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-features-table tr:last-child {
+  border-bottom: none;
+}
+
+.sidebar-features-table td {
+  padding: 10px 0;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.sidebar-features-table td:first-child {
+  font-weight: 700;
+  color: #ffffff;
+  width: 95px;
+  flex-shrink: 0;
+  padding-right: 8px;
+}
+
+[data-theme="light"] .sidebar-features-table td:first-child {
+  color: #0f172a;
+}
+
+.sidebar-features-table td:last-child {
+  color: #ffffff;
+  font-weight: 500;
+  word-break: keep-all;
+}
+
+[data-theme="light"] .sidebar-features-table td:last-child {
+  color: #0f172a;
+}
+
+/* Sidebar Overview List */
+.sidebar-overview-list {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #ffffff;
+  padding-left: 18px;
+  margin: 8px 0 0 0;
+  list-style-type: disc;
+}
+
+.sidebar-overview-list li {
+  margin-bottom: 8px;
+  word-break: keep-all;
+  font-weight: 500;
+}
+
+[data-theme="light"] .sidebar-overview-list {
+  color: #0f172a;
+}
+
+/* Sidebar Blue Label (Lineup) */
+.info-group .info-label.info-label-blue {
+  color: #8ab4f8;
+}
+
+[data-theme="light"] .info-group .info-label.info-label-blue {
+  color: #3b4ab3;
+}
+
+/* Sidebar Green Label (Ssukssuk) */
+.info-group .info-label.info-label-green {
+  color: #86efac;
+}
+
+[data-theme="light"] .info-group .info-label.info-label-green {
+  color: #16a34a;
+}

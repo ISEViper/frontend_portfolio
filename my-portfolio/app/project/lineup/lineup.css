@@ -618,3 +618,571 @@
   opacity: 0.85;
   font-weight: 500;
 }
+
+/* =============================================
+   Lineup 전용 3컬럼 레이아웃
+   ============================================= */
+.lineup-three-col-body {
+  display: grid;
+  grid-template-columns: 260px 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+  padding: 60px 60px 80px;
+}
+
+@media (max-width: 1300px) {
+  .lineup-three-col-body {
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .lineup-engineering-col {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .lineup-three-col-body {
+    grid-template-columns: 1fr;
+    padding: 40px 24px 60px;
+  }
+}
+
+/* 중간 컬럼 - Frontend Engineering */
+.lineup-engineering-col {
+  /* inherits from lineup-highlights-container styles */
+}
+
+/* 오른쪽 컬럼 - Interactive Preview */
+.lineup-preview-col {
+  position: sticky;
+  top: 100px;
+}
+
+/* =============================================
+   모바일 + 웹 동시 표시 (Dual Preview)
+   ============================================= */
+.lineup-dual-preview {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* 모바일 앱 - 소형 */
+.lineup-mobile-app-sm {
+  width: 200px;
+  min-width: 200px;
+  height: 420px;
+  background-color: #f7f7f9;
+  border: 8px solid #1a1a1a;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.lineup-mobile-app-sm * {
+  box-sizing: border-box;
+}
+
+.lineup-notch-sm {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 16px;
+  background-color: #1a1a1a;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  z-index: 20;
+}
+
+/* 웹 대시보드 - 확장 */
+.lineup-web-frame-lg {
+  flex: 1;
+  min-width: 0;
+  height: 420px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1a1a1a;
+  position: relative;
+}
+
+/* 웹 대시보드 헤더 (실제 이미지처럼 화이트 베이스) */
+.lineup-web-frame-lg .lineup-wf-header {
+  padding: 10px 16px;
+  background: #1e2235;
+  border-bottom: 1px solid #2d3452;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.lineup-wf-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.lineup-wf-logo-mark {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #a3e635 0%, #65a30d 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #1a2e05;
+}
+
+.lineup-wf-content {
+  display: flex;
+  height: calc(100% - 42px);
+  overflow: hidden;
+}
+
+.lineup-wf-sidebar {
+  width: 100px;
+  background: #1e2235;
+  border-right: 1px solid #2d3452;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #94a3b8;
+}
+
+.lineup-wf-sidebar-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: #94a3b8;
+}
+
+.lineup-wf-sidebar-item.active {
+  background: #2d3452;
+  color: #fff;
+}
+
+.lineup-wf-main {
+  flex: 1;
+  background: #f8fafc;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lineup-wf-main::-webkit-scrollbar { display: none; }
+
+.lineup-wf-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.lineup-wf-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.lineup-wf-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.lineup-wf-stat {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.lineup-wf-stat span {
+  font-size: 9px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+}
+
+.lineup-wf-stat strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-top: 2px;
+}
+
+.lineup-wf-queue-wrap {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.lineup-wf-queue-head {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lineup-wf-queue-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.lineup-wf-queue-tab {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lineup-wf-queue-tab.active {
+  background: #1e2235;
+  color: #fff;
+}
+
+.lineup-wf-queue-tab.inactive {
+  color: #94a3b8;
+}
+
+.lineup-wf-queue-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f8fafc;
+  gap: 10px;
+}
+
+.lineup-wf-queue-item:last-child {
+  border-bottom: none;
+}
+
+.lineup-wf-order {
+  font-size: 9px;
+  color: #94a3b8;
+  font-weight: 500;
+  width: 28px;
+  text-align: center;
+}
+
+.lineup-wf-order strong {
+  display: block;
+  font-size: 16px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.lineup-wf-ticketnum {
+  font-size: 14px;
+  font-weight: 800;
+  color: #3b4ab3;
+  min-width: 36px;
+}
+
+.lineup-wf-ticketnum span {
+  font-size: 9px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.lineup-wf-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.lineup-wf-name small {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.lineup-wf-name small.arrived {
+  color: #22c55e;
+}
+
+.lineup-wf-name small.pending {
+  color: #f59e0b;
+}
+
+.lineup-wf-action-group {
+  display: flex;
+  gap: 4px;
+}
+
+.lineup-wf-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+}
+
+.lineup-wf-btn.call {
+  background: #fef9c3;
+  color: #854d0e;
+}
+.lineup-wf-btn.call:hover {
+  background: #fef08a;
+}
+
+.lineup-wf-btn.enter {
+  background: #dcfce7;
+  color: #166534;
+}
+.lineup-wf-btn.enter:hover {
+  background: #bbf7d0;
+}
+
+.lineup-wf-btn.cancel {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.lineup-wf-btn.cancel:hover {
+  background: #fecaca;
+}
+
+.lineup-wf-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 연결선 (sync indicator) */
+.lineup-sync-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  color: #3b4ab3;
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.7;
+  min-width: 28px;
+  margin-top: 80px;
+}
+
+.lineup-sync-arrow {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, #3b4ab3, transparent);
+}
+
+/* 모바일 소형 내부 스타일 */
+.lineup-mobile-sm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  z-index: 10;
+  padding-top: 20px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.lineup-mobile-sm-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lineup-mobile-sm-content::-webkit-scrollbar { display: none; }
+
+.lineup-mobile-sm-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.lineup-mobile-sm-section-subtitle {
+  font-size: 9px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.lineup-ticket-sm {
+  background: linear-gradient(135deg, #3b4ab3 0%, #2b3a8c 100%);
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 14px rgba(59,74,179,0.25);
+}
+
+.lineup-ticket-sm-label {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.lineup-ticket-sm-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 4px 0;
+}
+
+.lineup-ticket-sm-meta {
+  display: flex;
+  justify-content: space-around;
+  font-size: 9px;
+  opacity: 0.85;
+  margin-top: 8px;
+}
+
+.lineup-mobile-sm-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #f1f5f9;
+  font-size: 10px;
+  color: #334155;
+}
+
+.lineup-mobile-sm-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 44px;
+  background-color: #fff;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 10;
+}
+
+.lineup-mobile-sm-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #cbd5e1;
+  font-size: 7px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lineup-mobile-sm-nav-item.active { color: #3b4ab3; }
+
+/* 모달 오버레이 (소형 모바일용) */
+.lineup-modal-overlay-sm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 10, 20, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 16px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.lineup-modal-card-sm {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(10, 15, 40, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lineup-modal-card-sm .lineup-modal-icon-wrap {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 10px;
+}
+
+.lineup-modal-card-sm .lineup-modal-title {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.lineup-modal-card-sm .lineup-modal-message {
+  font-size: 10px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.lineup-modal-card-sm .lineup-modal-btn {
+  padding: 8px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

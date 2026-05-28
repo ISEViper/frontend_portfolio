@@ -27,7 +27,7 @@ export const projectData = [
     logoDesc: "Queue Platform",
     image: "/projects/lineup/Lineup_App_Icon.png",
     role: "Frontend Engineer",
-    tech: ["React Native", "Next.js", "TypeScript", "Zustand"],
+    tech: ["React Native", "Expo", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "Recharts", "Axios"],
     overview: "박람회 부스 대기열 관리 플랫폼의 유저(App) 및 관리자(Web) 통합 구축",
     highlights: [
       "Next.js SSR(Server-Side Rendering)을 적용하여 관리자 대시보드의 초기 로딩 속도 및 SEO 향상",
@@ -37,6 +37,7 @@ export const projectData = [
     ],
     previewType: "responsive"
   },
+
   {
     id: 3,
     slug: "ssukssuk",
