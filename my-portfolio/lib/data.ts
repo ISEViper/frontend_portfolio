@@ -40,19 +40,19 @@ export const projectData = [
   {
     id: 3,
     slug: "ssukssuk",
-    title: "쑥쑥",
+    title: "쑥쑥 (SSUKSSUK)",
     year: "2026.01 - 2026.02",
     logo: "SSUKSSUK",
-    logoDesc: "AI Farm System",
+    logoDesc: "Smart IoT Farm",
     image: "/projects/ssukssuk/ssukssuk_App_Icon.png",
     role: "UI/UX & Frontend Developer",
-    tech: ["React Native", "Recharts", "Figma", "Python API"],
-    overview: "스파트필름 수경 재배 시스템을 위한 스마트 식물 재배기 모니터링 앱 (Mobile Only)",
+    tech: ["React Native", "TypeScript", "Firebase FCM", "Recharts", "Figma"],
+    overview: "센서 데이터 실시간 모니터링, AI 기반 건강 진단(YOLO) 및 STM32 펌프 자동 복구 시스템을 구축한 IoT 스마트 수경 재배 플랫폼",
     highlights: [
-      "사용자 친화적인 모바일 모니터링 대시보드 UI 컴포넌트 모듈화 및 개발",
-      "재배기 센서 데이터 및 AI 이미지 분석 결과를 실시간 Interactive Chart로 시각화",
-      "다크모드/라이트모드 테마 시스템 구축을 통한 사용자 접근성 극대화",
-      "API 응답 실패 및 로딩 상태 처리를 위한 Skeleton UI 및 Error Boundary 설계"
+      "SSE(Server-Sent Events) 및 MQTT 프로토콜 연동을 통한 온습도·수위·EC 센서 데이터 실시간 대시보드 시각화",
+      "YOLO Segmentation 모델 활용 AI 식물 건강 분석(정상, 과습 등 5단계) 및 14일 생장 추적 카메라 파이프라인 연동",
+      "STM32 MCU 레벨의 상태 머신 자동 제어/복구 및 사용자 원터치 모바일 제어 인터랙션 구현",
+      "Jenkins CI/CD 자동화 빌드 및 Prometheus + Grafana + Loki 모니터링 경보(12가지 규칙) 인프라 구축"
     ],
     previewType: "mobile"
   }

@@ -4,9 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { projectData } from '../../../lib/data';
 import {
-  ArrowLeft, RefreshCw, User, Home, Sparkles, ChevronRight,
-  Droplets, Thermometer, Sun, Flame, CheckCircle, Activity,
-  Lightbulb, AlertCircle, BarChart2
+  ArrowLeft, RefreshCw, Sparkles, CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import './ssukssuk.css';
@@ -18,18 +16,55 @@ export default function SsukSsuk_page() {
   const cursorRef = useRef<HTMLDivElement>(null);
 
   const [theme, setTheme] = useState('dark');
-  const [selectedSensor, setSelectedSensor] = useState('temp'); // 'temp' | 'humid' | 'light' | 'water'
 
-  // 실시간 스마트폰 센서 상태 및 제어 시뮬레이션 상태값
-  const [tempVal, setTempVal] = useState(24.5);
-  const [humidVal, setHumidVal] = useState(60);
-  const [lightVal, setLightVal] = useState(500);
-  const [waterVal, setWaterVal] = useState(45); // % (45% -> 물 부족 상태 시뮬레이션)
+  // Pixel-art simulator state
+  const [isAutoMode, setIsAutoMode] = useState(true);
+  const [selectedSensor, setSelectedSensor] = useState<string | null>(null); // 'water' | 'ec' | 'temp'
+  const [waterLevelVal, setWaterLevelVal] = useState('적정함');
+  const [tempVal, setTempVal] = useState(27.8);
+  const [humidVal, setHumidVal] = useState(15);
 
-  // 모달 팝업 상태값
   const [generalModalOpen, setGeneralModalOpen] = useState(false);
   const [clickedFeature, setClickedFeature] = useState('');
   const [controlActionAlert, setControlActionAlert] = useState<string | null>(null);
+  const [emailCopied, setEmailCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('jklas187@naver.com');
+    setEmailCopied(true);
+    setTimeout(() => {
+      setEmailCopied(false);
+    }, 2000);
+  };
+
+  // Random walking plant position & jump state
+  const [plantPos, setPlantPos] = useState({ x: 50, y: 60 });
+  const [isJumping, setIsJumping] = useState(false);
+
+  useEffect(() => {
+    const moveInterval = setInterval(() => {
+      setIsJumping(prevJumping => {
+        if (!prevJumping) {
+          setPlantPos({
+            x: Math.floor(Math.random() * (72 - 28) + 28), // safe range within the simulator viewport
+            y: Math.floor(Math.random() * (68 - 56) + 56), // dirt road path range
+          });
+        }
+        return prevJumping;
+      });
+    }, 4000);
+    return () => clearInterval(moveInterval);
+  }, []);
+
+  const handlePlantClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isJumping) {
+      setIsJumping(true);
+      setTimeout(() => {
+        setIsJumping(false);
+      }, 800); // Animation duration is 800ms
+    }
+  };
 
   const handleFeatureClick = (featureName: string) => {
     setClickedFeature(featureName);
@@ -67,81 +102,62 @@ export default function SsukSsuk_page() {
   const handleMouseLeave = () => cursorRef.current?.classList.remove('hover');
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  // 센서 모의 제어 동작 (물 공급)
-  const supplyWater = () => {
-    setWaterVal(100);
-    setControlActionAlert("스마트 재배기에 물이 가득 공급되었습니다! 🌿");
+  // Simulator actions
+  const refillWater = () => {
+    setWaterLevelVal('적정함');
+    setControlActionAlert("수동 조작으로 물 보충 펌프가 가동되어 수위가 복구되었습니다! 💧");
   };
 
-  // 센서 모의 제어 동작 (LED 켜기)
-  const turnOnLed = () => {
-    setLightVal(950);
-    setControlActionAlert("스마트 식물 LED 생장조명을 작동시켰습니다! 💡");
-  };
-
-  // 센서 모의 제어 동작 (환풍기 작동)
-  const turnOnFan = () => {
-    setTempVal(22.1);
-    setHumidVal(52);
-    setControlActionAlert("환풍 서큘레이터를 가동하여 공기를 순환시킵니다! 🌀");
-  };
-
-  // 리셋 시뮬레이션
-  const resetSensors = () => {
-    setTempVal(24.5);
-    setHumidVal(60);
-    setLightVal(500);
-    setWaterVal(45);
-    setControlActionAlert("모든 재배기 센서값을 정상 대기치로 리셋했습니다.");
-  };
-
-  // 센서별 차트 데이터 맵핑
-  const getChartData = () => {
-    switch (selectedSensor) {
-      case 'temp':
-        return [
-          { label: '09:00', val: 21.2, display: '21.2°' },
-          { label: '11:00', val: 23.5, display: '23.5°' },
-          { label: '13:00', val: tempVal, display: `${tempVal}°` },
-          { label: '15:00', val: 23.8, display: '23.8°' }
-        ];
-      case 'humid':
-        return [
-          { label: '09:00', val: 65, display: '65%' },
-          { label: '11:00', val: 58, display: '58%' },
-          { label: '13:00', val: humidVal, display: `${humidVal}%` },
-          { label: '15:00', val: 55, display: '55%' }
-        ];
-      case 'light':
-        return [
-          { label: '09:00', val: 30, display: '300lx' },
-          { label: '11:00', val: 60, display: '600lx' },
-          { label: '13:00', val: (lightVal / 10), display: `${lightVal}lx` },
-          { label: '15:00', val: 80, display: '800lx' }
-        ];
-      case 'water':
-        return [
-          { label: '09:00', val: 50, display: '50%' },
-          { label: '11:00', val: 48, display: '48%' },
-          { label: '13:00', val: waterVal, display: `${waterVal}%` },
-          { label: '15:00', val: 42, display: '42%' }
-        ];
-      default:
-        return [];
+  const simulateWaterShortage = () => {
+    setWaterLevelVal('물 부족');
+    if (isAutoMode) {
+      // In AUTO mode, trigger auto refill after 1.5 seconds!
+      setTimeout(() => {
+        setWaterLevelVal('적정함');
+        setControlActionAlert("⚠️ 수위 이상 감지! AUTO 모드 펌프가 자동으로 가동되어 수조를 채웠습니다. 🌿");
+      }, 1500);
     }
   };
 
-  const chartData = getChartData();
-  const maxChartVal = selectedSensor === 'light' ? 100 : 100; // Normalizing heights
+  const runVentilation = () => {
+    setTempVal(23.5);
+    setHumidVal(45);
+    setControlActionAlert("환풍 서큘레이터가 작동하여 온습도가 조절되었습니다! 🌀");
+  };
+
+  const resetSimulator = () => {
+    setWaterLevelVal('적정함');
+    setTempVal(27.8);
+    setHumidVal(15);
+    setSelectedSensor(null);
+    setControlActionAlert("재배기 센서 상태를 정상 초기값으로 설정했습니다.");
+  };
 
   return (
     <div className="app-wrapper">
       <div className="custom-cursor" ref={cursorRef}></div>
 
       <nav>
-        <Link href="/" className="logo-nav" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <span className="logo-k">K</span><span className="logo-dot">.</span><span className="logo-hyun">HYUN</span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/" className="logo-nav" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <span className="logo-k">K</span><span className="logo-dot">.</span><span className="logo-hyun">HYUN</span>
+          </Link>
+          <div className="nav-social-links">
+            <button className="nav-social-btn" onClick={handleCopyEmail} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} aria-label="Copy Email">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              <span>Email</span>
+            </button>
+            <a href="https://github.com/ISEViper" target="_blank" rel="noopener noreferrer" className="nav-social-btn" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} aria-label="GitHub">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
+          </div>
+        </div>
         <div className="links">
           <button className="theme-toggle" onClick={toggleTheme} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             {theme === 'dark' ? 'Light' : 'Dark'}
@@ -188,9 +204,9 @@ export default function SsukSsuk_page() {
             <div className="info-group" style={{ marginTop: '24px' }}>
               <span className="info-label info-label-green">Service Overview</span>
               <ul className="sidebar-overview-list">
-                <li>식물 초보자를 위한 IoT 스마트 수경 재배기 원격 제어 홈케어 서비스</li>
-                <li>식물 종류별 생장 알고리즘 연동 맞춤 자동 급수 및 광량 조절 지원</li>
-                <li>환경 상태(온/습도, 조도, 수위) 실시간 수집 및 인터랙티브 차트 모니터링</li>
+                <li>사용자 친화적인 대시보드 기반 IoT 스마트 식물 재배 모바일 홈케어 서비스</li>
+                <li>온도, 습도, 수위, EC 센서 데이터를 실시간 스트리밍 시각화하는 인터랙티브 모니터링</li>
+                <li>YOLO AI 분석 모델 및 식물 생장 가이드 기반 스마트 푸시 케어 알림 지원</li>
               </ul>
             </div>
 
@@ -200,16 +216,16 @@ export default function SsukSsuk_page() {
               <table className="sidebar-features-table">
                 <tbody>
                   <tr>
-                    <td>센서 원격 제어</td>
-                    <td>모바일 클릭 한 번으로 물 펌프, 생장 LED, 팬 등을 실시간 구동</td>
+                    <td>실시간 모니터링</td>
+                    <td>온습도·수량 등 센서 계측 지표 실시간 수집 및 인터랙티브 차트 모니터링</td>
                   </tr>
                   <tr>
-                    <td>히스토리 차트</td>
-                    <td>시간별, 부위별 상태 지표를 애니메이션 차트로 시각화 모니터링</td>
+                    <td>원격 디바이스 제어</td>
+                    <td>원터치 제어로 수조 물 공급, 생장 LED, 환풍 서큘레이터 원격 작동</td>
                   </tr>
                   <tr>
-                    <td>맞춤 가이드 알림</td>
-                    <td>수위 경보 및 식물별 생장 팁 등의 AI 자동 푸시 가이드 제공</td>
+                    <td>AI 스마트 가이드 푸시</td>
+                    <td>수조 물부족 임계치 인지 알림 및 AI 생장 가이드 실시간 Push 통지</td>
                   </tr>
                 </tbody>
               </table>
@@ -280,155 +296,209 @@ export default function SsukSsuk_page() {
 
               <div className="ssuk-container">
                 {/* User Mobile App Simulator */}
-                <div className="ssuk-mobile-app">
-                  <div className="ssuk-notch"></div>
+                <div className="ssuk-mobile-app" style={{
+                  backgroundImage: "url('/projects/ssukssuk/app_background.png')",
+                  backgroundSize: '100% 100%',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  border: '12px solid #1a1a1a',
+                  borderRadius: '40px',
+                  width: '100%',
+                  maxWidth: '380px',
+                  height: '760px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  fontFamily: '"Pretendard", sans-serif',
+                  boxShadow: '0 20px 45px rgba(0,0,0,0.4)',
+                }}>
 
-                  <div className="ssuk-header">
-                    <ArrowLeft className="icon" size={20} onClick={() => handleFeatureClick('이전 화면')} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-                    <div>쑥쑥 스마트 홈</div>
-                    <RefreshCw className="icon" size={18} onClick={resetSensors} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
+                  {/* Top Panel (Overlay over the wood signboard in app_background.png) */}
+                  <div className="ssuk-top-panel-overlay">
+                    <div className="ssuk-top-title">test2</div>
+                    <div className="ssuk-top-lv">Lv 2</div>
+                    <div className="ssuk-top-status-label">
+                      <span>현재</span>
+                      <span>상태</span>
+                    </div>
+                    <div className="ssuk-top-progress-bg">
+                      <div className="ssuk-top-progress-fill" style={{ width: '80%' }}></div>
+                    </div>
+                    <button className="ssuk-top-bell-btn" onClick={() => handleFeatureClick('알림 설정')}>
+                      🔔
+                    </button>
                   </div>
 
-                  <div className="ssuk-content ssuk-section-padding">
-                    {/* Plant Panel */}
-                    <div className="ssuk-plant-panel">
-                      <div className="ssuk-plant-info">
-                        <h4>스파트필름 1호</h4>
-                        <p>생장 단계: 3단계 (개화기)</p>
-                        <p>수경 재배 45일차 🌿</p>
-                      </div>
-                      <div className="ssuk-plant-avatar">
-                        <Sparkles size={24} color="#fff" />
-                      </div>
+                  {/* Mode Toggle Button */}
+                  <div className="ssuk-mode-toggle-container">
+                    <button
+                      onClick={() => setIsAutoMode(true)}
+                      className={`ssuk-mode-btn ${isAutoMode ? 'active' : ''}`}
+                    >
+                      AUTO
+                    </button>
+                    <button
+                      onClick={() => setIsAutoMode(false)}
+                      className={`ssuk-mode-btn ${!isAutoMode ? 'active' : ''}`}
+                    >
+                      MANUAL
+                    </button>
+                  </div>
+
+                  {/* Three Sensor Signpost Overlays (Text positioned directly on the empty background boards) */}
+                  <div
+                    className="ssuk-sensor-overlay left"
+                    onClick={() => setSelectedSensor(selectedSensor === 'water' ? null : 'water')}
+                  >
+                    <div className="ssuk-sensor-title">수위</div>
+                    <div className={`ssuk-sensor-val ${waterLevelVal === '물 부족' ? 'alert' : ''}`}>
+                      {waterLevelVal}
                     </div>
+                  </div>
 
-                    <div className="ssuk-section-title" style={{ fontSize: '15px', color: '#0f172a', marginBottom: '10px' }}>
-                      실시간 센서 모니터링
+                  <div
+                    className="ssuk-sensor-overlay middle"
+                    onClick={() => setSelectedSensor(selectedSensor === 'ec' ? null : 'ec')}
+                  >
+                    <div className="ssuk-sensor-title">농도</div>
+                    <div className="ssuk-sensor-val">적정함</div>
+                  </div>
+
+                  <div className="ssuk-sensor-overlay right">
+                    <div className="ssuk-sensor-title">온습도</div>
+                    <div className="ssuk-sensor-val">
+                      <div>{tempVal}°C /</div>
+                      <div>{humidVal}%</div>
                     </div>
+                  </div>
 
-                    {/* Sensor Cards Grid */}
-                    <div className="ssuk-sensor-grid">
-                      <div
-                        className={`ssuk-sensor-card ${selectedSensor === 'temp' ? 'active' : ''}`}
-                        onClick={() => setSelectedSensor('temp')}
-                        style={{ borderColor: selectedSensor === 'temp' ? '#16a34a' : '#f1f5f9' }}
-                      >
-                        <div className="ssuk-sensor-header">
-                          <span className="ssuk-sensor-label">온도</span>
-                          <Thermometer size={16} color={selectedSensor === 'temp' ? '#16a34a' : '#64748b'} />
-                        </div>
-                        <div className="ssuk-sensor-value">{tempVal}°C</div>
-                        <span className="ssuk-sensor-status good">정상</span>
-                      </div>
+                  {/* Plant Character (Center/Bottom Dirt Area - Walks randomly and jumps on click) */}
+                  <div
+                    onClick={handlePlantClick}
+                    className={`ssuk-plant ${isJumping ? 'jumping' : ''}`}
+                    style={{
+                      left: `${plantPos.x}%`,
+                      top: `${plantPos.y}%`,
+                    }}
+                  >
+                    <img 
+                      src="/projects/ssukssuk/normal_spath_lv3.png" 
+                      alt="Spathiphyllum Level 3" 
+                      style={{ 
+                        width: '180px', 
+                        height: 'auto',
+                        imageRendering: 'pixelated',
+                        userSelect: 'none'
+                      }}
+                    />
+                  </div>
 
-                      <div
-                        className={`ssuk-sensor-card ${selectedSensor === 'humid' ? 'active' : ''}`}
-                        onClick={() => setSelectedSensor('humid')}
-                        style={{ borderColor: selectedSensor === 'humid' ? '#16a34a' : '#f1f5f9' }}
-                      >
-                        <div className="ssuk-sensor-header">
-                          <span className="ssuk-sensor-label">습도</span>
-                          <Droplets size={16} color={selectedSensor === 'humid' ? '#16a34a' : '#64748b'} />
-                        </div>
-                        <div className="ssuk-sensor-value">{humidVal}%</div>
-                        <span className="ssuk-sensor-status good">쾌적</span>
-                      </div>
-
-                      <div
-                        className={`ssuk-sensor-card ${selectedSensor === 'light' ? 'active' : ''}`}
-                        onClick={() => setSelectedSensor('light')}
-                        style={{ borderColor: selectedSensor === 'light' ? '#16a34a' : '#f1f5f9' }}
-                      >
-                        <div className="ssuk-sensor-header">
-                          <span className="ssuk-sensor-label">조도</span>
-                          <Sun size={16} color={selectedSensor === 'light' ? '#16a34a' : '#64748b'} />
-                        </div>
-                        <div className="ssuk-sensor-value">{lightVal} lx</div>
-                        <span className={`ssuk-sensor-status ${lightVal < 600 ? 'warning' : 'good'}`}>
-                          {lightVal < 600 ? '일조부족' : '충분'}
+                  {/* Interactive Control overlay card (above bottom nav) */}
+                  {selectedSensor && (
+                    <div style={{
+                      backgroundColor: 'rgba(255,255,255,0.95)',
+                      borderTop: '3px solid #8B4F1D',
+                      padding: '12px 16px',
+                      zIndex: 15,
+                      position: 'absolute',
+                      bottom: '62px',
+                      left: 0,
+                      width: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                      animation: 'slideUp 0.3s ease-out'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: '800', color: '#8B4F1D' }}>
+                          {selectedSensor === 'water' && '수위 제어 패널'}
+                          {selectedSensor === 'ec' && '영양 농도 상태'}
+                          {selectedSensor === 'temp' && '온습도 조절 장치'}
                         </span>
+                        <button 
+                          onClick={() => setSelectedSensor(null)} 
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#888',
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          닫기
+                        </button>
                       </div>
 
-                      <div
-                        className={`ssuk-sensor-card ${selectedSensor === 'water' ? 'active' : ''}`}
-                        onClick={() => setSelectedSensor('water')}
-                        style={{ borderColor: selectedSensor === 'water' ? '#16a34a' : '#f1f5f9' }}
-                      >
-                        <div className="ssuk-sensor-header">
-                          <span className="ssuk-sensor-label">수위</span>
-                          <Droplets size={16} color={selectedSensor === 'water' ? '#16a34a' : '#64748b'} />
-                        </div>
-                        <div className="ssuk-sensor-value">{waterVal}%</div>
-                        <span className={`ssuk-sensor-status ${waterVal < 50 ? 'warning' : 'good'}`}>
-                          {waterVal < 50 ? '물부족' : '정상'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Sensor Dynamic History Chart */}
-                    <div className="ssuk-chart-box">
-                      <div className="ssuk-card-title" style={{ fontSize: '13px', margin: 0 }}>
-                        <BarChart2 size={15} color="#16a34a" /> {selectedSensor === 'temp' && '온도 추이 (°C)'}
-                        {selectedSensor === 'humid' && '습도 추이 (%)'}
-                        {selectedSensor === 'light' && '광량 추이 (lx / 10)'}
-                        {selectedSensor === 'water' && '수조 잔여 수량 (%)'}
-                      </div>
-                      <div className="ssuk-chart-bars">
-                        {chartData.map((item, idx) => (
-                          <div key={idx} className="ssuk-chart-bar-wrap">
-                            <div
-                              className="ssuk-chart-bar-fill"
-                              style={{ height: `${(item.val / maxChartVal) * 100}%` }}
-                              data-value={item.display}
-                            ></div>
-                            <span className="ssuk-chart-label">{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* IoT Controller Actions */}
-                    <div className="ssuk-card" style={{ marginBottom: '0' }}>
-                      <div className="ssuk-card-title">
-                        <Activity size={15} color="#16a34a" /> 스마트 원격 원터치 제어
-                      </div>
-                      <p className="ssuk-card-desc" style={{ marginBottom: '14px', fontSize: '11.5px' }}>
-                        센서 관찰 후 급수 제어나 LED 조명 조작 등의 하드웨어 원격 액션을 트리거해 보세요.
-                      </p>
-                      
                       {selectedSensor === 'water' && (
-                        <button className="ssuk-btn" onClick={supplyWater}>
-                          물 보충 펌프 켜기 (100% 충전)
-                        </button>
+                        <div>
+                          <p style={{ margin: '0 0 8px 0', fontSize: '11.5px', color: '#555', lineHeight: '1.4' }}>
+                            {waterLevelVal === '물 부족' 
+                              ? '현재 수량 임계치 미만입니다. 수동 급수를 통해 수조를 채워주세요.'
+                              : '현재 수조에 물이 적절히 채워져 있습니다. (정상 범위)'}
+                          </p>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {waterLevelVal === '물 부족' ? (
+                              <button 
+                                onClick={refillWater}
+                                style={{
+                                  flex: 1,
+                                  backgroundColor: '#16a34a',
+                                  color: '#fff',
+                                  border: 'none',
+                                  padding: '8px',
+                                  borderRadius: '6px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                수조에 물 공급하기 💧
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={simulateWaterShortage}
+                                style={{
+                                  flex: 1,
+                                  backgroundColor: '#e74c3c',
+                                  color: '#fff',
+                                  border: 'none',
+                                  padding: '8px',
+                                  borderRadius: '6px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                물 부족 상황 시뮬레이션
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       )}
-                      {selectedSensor === 'light' && (
-                        <button className="ssuk-btn" onClick={turnOnLed}>
-                          식물용 LED 생장조명 작동
-                        </button>
-                      )}
-                      {selectedSensor === 'temp' && (
-                        <button className="ssuk-btn" onClick={turnOnFan}>
-                          강제 통풍 및 열기 순환팬 작동
-                        </button>
-                      )}
-                      {selectedSensor === 'humid' && (
-                        <button className="ssuk-btn" onClick={turnOnFan}>
-                          내부 습도 하강용 벤트 개방
-                        </button>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Mobile Bottom Navigation */}
-                  <div className="ssuk-bottom-nav">
-                    <div className="ssuk-nav-item active">
-                      <Home size={20} />대시보드
+                      {selectedSensor === 'ec' && (
+                        <div>
+                          <p style={{ margin: '0 0 4px 0', fontSize: '11.5px', color: '#555', lineHeight: '1.4' }}>
+                            수경재배 배양액의 EC(전기전도도) 농도는 <strong>적정함</strong> 상태입니다. 식물의 영양소 흡수에 최적화된 상태를 유지하고 있습니다.
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <div className="ssuk-nav-item" onClick={() => handleFeatureClick('식물 생장 일지')} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                      <Sun size={20} />성장일지
+                  )}
+
+                  {/* Bottom Navigation Panel (using bottom.png as bg) */}
+                  <div className="ssuk-pixel-nav">
+                    <div className="ssuk-nav-item-wrapper" onClick={() => handleFeatureClick('홈 대시보드')}>
+                      <img src="/projects/ssukssuk/home_select.png" alt="Home" className="ssuk-nav-icon" />
                     </div>
-                    <div className="ssuk-nav-item" onClick={() => handleFeatureClick('마이 페이지')} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                      <User size={20} />마이
+                    <div className="ssuk-nav-item-wrapper" onClick={() => handleFeatureClick('성장 히스토리')}>
+                      <img src="/projects/ssukssuk/history_not_select.png" alt="History" className="ssuk-nav-icon" />
+                    </div>
+                    <div className="ssuk-nav-item-wrapper" onClick={() => handleFeatureClick('식물 생장 일지')}>
+                      <img src="/projects/ssukssuk/plant_not_select.png" alt="Plant Log" className="ssuk-nav-icon" />
+                    </div>
+                    <div className="ssuk-nav-item-wrapper" onClick={() => handleFeatureClick('마이 페이지')}>
+                      <img src="/projects/ssukssuk/profile_not_select.png" alt="Profile" className="ssuk-nav-icon" />
                     </div>
                   </div>
 
@@ -483,13 +553,18 @@ export default function SsukSsuk_page() {
                       </div>
                     </div>
                   )}
-
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {emailCopied && (
+        <div className="toast-notification">
+          <span>이메일 주소가 복사되었습니다!</span>
+        </div>
+      )}
     </div>
   );
 }
