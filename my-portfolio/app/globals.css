@@ -70,13 +70,46 @@ body {
 
 /* 네비게이션 */
 nav {
-    position: fixed; top: 0; width: 100%; padding: 20px 50px;
+    position: fixed; top: 0; width: 100%; padding: 10px 50px;
     display: flex; justify-content: space-between; align-items: center;
     box-sizing: border-box; z-index: 1000;
-    background: var(--nav-bg); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
+    background: var(--nav-bg); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(138, 155, 178, 0.08); /* Softer translucent line */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); /* Soft ambient shadow */
+    transition: all 0.3s ease;
 }
-nav .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: 2px; color: var(--text-main); cursor: none;}
+nav .logo {
+    font-weight: 900;
+    font-size: 1.25rem;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    cursor: none;
+    text-decoration: none;
+}
+.logo-nav {
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    cursor: none;
+}
+.logo-k {
+    font-weight: 900;
+    color: var(--text-main);
+}
+.logo-dot {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+.logo-hyun {
+    font-weight: 300;
+    color: var(--text-sub);
+    letter-spacing: 1.5px;
+}
 nav .links { display: flex; align-items: center; gap: 30px; }
 nav .links a {
     color: var(--text-main); text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; transition: color 0.3s; cursor: none;
@@ -111,14 +144,205 @@ nav .links a:hover { color: var(--accent); }
 .loader-bar-wrap { width: 200px; height: 2px; background: var(--border-color); margin-top: 20px; overflow: hidden; }
 .loader-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
-.hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-.hero-title-wrap { text-align: center; line-height: 0.9; z-index: 2; }
-.hero-title { font-size: 12vw; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: -0.05em; text-shadow: 2px 2px 0 var(--bg-color), -2px -2px 0 var(--bg-color), 0 4px 15px rgba(0,0,0,0.3); }
-.hero-title.outline { color: transparent; -webkit-text-stroke: 2px var(--text-main); text-shadow: none; }
-.hero-subtitle { margin-top: 30px; font-size: 1.5rem; color: var(--accent); font-weight: 800; letter-spacing: 5px; text-shadow: 0 0 15px var(--accent-glow); }
+/* Hero section structural overlay styling */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
 
-.marquee-container { position: absolute; bottom: 10%; width: 100vw; overflow: hidden; white-space: nowrap; opacity: 0.15; z-index: 1; transform: rotate(-2deg) scale(1.1); }
-.marquee-content { display: inline-block; font-size: 6vw; font-weight: 900; animation: marquee 25s linear infinite; color: var(--accent); }
+.hero-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-layer.base {
+  z-index: 2;
+  background: transparent;
+}
+
+.hero-layer.reveal {
+  z-index: 3;
+  /* Clip-path circle centered at CSS vars updated via JS */
+  clip-path: circle(var(--mask-size, 0px) at var(--mouse-x, 0px) var(--mouse-y, 0px));
+  transition: clip-path 0.12s cubic-bezier(0.1, 0.8, 0.2, 1);
+}
+
+/* EXPLORATION EFFECT: Swap theme inside the reveal lens */
+/* Under dark base theme, reveal layer has a light background */
+[data-theme="dark"] .hero-layer.reveal {
+  background: #ffffff;
+}
+
+/* Under light base theme, reveal layer has a dark background */
+[data-theme="light"] .hero-layer.reveal {
+  background: #030712;
+}
+
+/* Canvas styling */
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-size: 40px 40px;
+  z-index: 2;
+}
+
+/* In dark base theme, grid overlay inside reveal lens has a subtle dark blue outline */
+[data-theme="dark"] .hero-grid-overlay {
+  background-image: 
+    linear-gradient(to right, rgba(0, 51, 204, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 51, 204, 0.08) 1px, transparent 1px);
+}
+
+/* In light base theme, grid overlay inside reveal lens has a subtle glowing cyan outline */
+[data-theme="light"] .hero-grid-overlay {
+  background-image: 
+    linear-gradient(to right, rgba(0, 210, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 210, 255, 0.06) 1px, transparent 1px);
+}
+
+.hero-title-wrap {
+  text-align: center;
+  line-height: 0.9;
+  z-index: 3;
+  margin-top: -85px; /* Shift titles upward to reduce top space significantly */
+}
+
+.title-overflow {
+  overflow: hidden;
+  padding: 5px 0;
+  display: block;
+}
+
+.hero-title {
+  font-size: 12vw;
+  font-weight: 900;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  text-shadow: 2px 2px 0 var(--bg-color), -2px -2px 0 var(--bg-color), 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.hero-title.outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--text-main);
+  text-shadow: none;
+}
+
+.hero-subtitle {
+  margin-top: 30px;
+  font-size: 1.5rem;
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 5px;
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Dynamic text coloring under dark theme (Light Reveal Layer - exploration) */
+[data-theme="dark"] .hero-layer.reveal .hero-title.highlighted {
+  color: #0033cc !important;
+  text-shadow: none;
+}
+
+[data-theme="dark"] .hero-layer.reveal .hero-title.outline.highlighted {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #0033cc !important;
+}
+
+[data-theme="dark"] .hero-layer.reveal .hero-subtitle.highlighted {
+  color: #0022aa !important;
+  text-shadow: none;
+}
+
+/* Dynamic text coloring under light theme (Dark Reveal Layer - exploration) */
+[data-theme="light"] .hero-layer.reveal .hero-title.highlighted {
+  color: #00d2ff !important;
+  text-shadow: 0 0 20px rgba(0, 210, 255, 0.4), 0 0 40px rgba(0, 85, 255, 0.2);
+}
+
+[data-theme="light"] .hero-layer.reveal .hero-title.outline.highlighted {
+  color: transparent !important;
+  -webkit-text-stroke: 2px #00d2ff !important;
+}
+
+[data-theme="light"] .hero-layer.reveal .hero-subtitle.highlighted {
+  color: #00d2ff !important;
+  text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+}
+
+/* Marquee refinement for better legibility and overlay centering */
+.marquee-container {
+  position: absolute;
+  left: 0;
+  width: 100vw;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
+  z-index: 0; /* Placed at the very back behind canvas (z-index 1) and titles (z-index 3) */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.marquee-container.top {
+  top: max(75px, calc(50vh - 85px - 14.5vw));
+  transform: translateY(-50%) scale(1.05); /* Parallel, positioned above 'KWANGSU' with more gap, clamped to prevent nav collision */
+}
+
+.marquee-container.bottom {
+  top: calc(50vh - 85px + 14.5vw + 95px);
+  transform: translateY(-50%) scale(1.05); /* Parallel, positioned below 'FRONTEND DEVELOPER' with more gap */
+}
+
+.marquee-content {
+  display: inline-block;
+  font-size: 6.5vw;
+  font-weight: 900;
+  animation: marquee 100s linear infinite;
+  letter-spacing: 2px;
+  font-family: 'Pretendard', sans-serif;
+  text-transform: uppercase;
+}
+
+[data-theme="dark"] .marquee-content {
+  color: rgba(0, 136, 255, 0.45); /* Bright glowing blue in dark mode */
+  text-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
+}
+
+[data-theme="light"] .marquee-content {
+  color: rgba(0, 85, 255, 0.3); /* Clear elegant blue in light mode */
+  text-shadow: none;
+}
+
+/* EXPLORATION EFFECT: Swap theme marquee colors inside the reveal lens */
+/* Under dark base theme, reveal layer has a white background (use dark blue marquee text) */
+[data-theme="dark"] .hero-layer.reveal .reveal-marquee .marquee-content {
+  color: rgba(0, 51, 204, 0.4) !important;
+  text-shadow: none !important;
+}
+
+/* Under light base theme, reveal layer has a dark background (use bright glowing cyan marquee text) */
+[data-theme="light"] .hero-layer.reveal .reveal-marquee .marquee-content {
+  color: rgba(0, 210, 255, 0.45) !important;
+  text-shadow: 0 0 10px rgba(0, 210, 255, 0.2) !important;
+}
+
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 .manifesto { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 20px; text-align: center; }
@@ -140,10 +364,10 @@ nav .links a:hover { color: var(--accent); }
 .project-logo-container { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; transition: all 0.5s; }
 .project-logo-text { font-size: 4rem; font-weight: 900; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 0 var(--card-bg), 0 10px 20px rgba(0,0,0,0.5); }
 .project-logo-sub { font-size: 1.1rem; font-weight: 700; color: var(--text-sub); margin-top: 10px; letter-spacing: 5px; text-transform: uppercase; }
-.project-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.6); transition: all 0.6s; z-index: 1; filter: brightness(0.4) contrast(1.2); }
+.project-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.1); transition: all 0.6s; z-index: 1; filter: brightness(0.4) contrast(1.2); }
 
 .project-card:hover .project-logo-container { opacity: 0; transform: scale(0.9); }
-.project-card:hover .project-image { opacity: 1; transform: scale(1.5); }
+.project-card:hover .project-image { opacity: 1; transform: scale(1.0); }
 
 .project-label {
     position: absolute;
@@ -178,11 +402,118 @@ nav .links a:hover { color: var(--accent); }
 
 .skills { padding: 10vh 0; background: var(--card-bg); transform: skewY(-3deg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
 .skills-inner { transform: skewY(3deg); }
-.tech-row { white-space: nowrap; overflow: hidden; margin-bottom: 20px; }
-.tech-text { display: inline-block; font-size: 4vw; font-weight: 900; color: transparent; -webkit-text-stroke: 1px rgba(138, 155, 178, 0.3); text-transform: uppercase; }
-.tech-text span { color: var(--accent); -webkit-text-stroke: 0; text-shadow: 0 0 15px var(--accent-glow); }
-.tech-row.left .tech-text { animation: marquee 30s linear infinite; }
-.tech-row.right .tech-text { animation: marquee 30s linear infinite reverse; }
+.tech-row {
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 24px;
+  width: 100%;
+}
+.tech-row:last-child {
+  margin-bottom: 0;
+}
+.marquee-track {
+  display: flex;
+  gap: 80px;
+  align-items: center;
+  padding: 20px 0;
+}
+.tech-row.left .marquee-track {
+  animation: scrollMarquee 45s linear infinite;
+}
+.tech-row.right .marquee-track {
+  animation: scrollMarquee 45s linear infinite reverse;
+}
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.tech-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: none;
+}
+
+.tech-marquee-text {
+  font-size: clamp(2.2rem, 4vw, 5.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-family: 'Pretendard', sans-serif;
+  letter-spacing: -1px;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(138, 155, 178, 0.35);
+  transition: all 0.3s ease;
+}
+
+.tech-marquee-icon {
+  width: clamp(2rem, 3.5vw, 4.8rem);
+  height: clamp(2rem, 3.5vw, 4.8rem);
+  font-size: clamp(2rem, 3.5vw, 4.8rem);
+  color: rgba(138, 155, 178, 0.35);
+  transition: all 0.3s ease, transform 0.3s ease;
+}
+
+/* Highlighted state (Solid color with accent/glow) */
+.tech-marquee-item.highlight .tech-marquee-text {
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+.tech-marquee-item.highlight .tech-marquee-icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+/* Hover effects */
+.tech-marquee-item:hover {
+  transform: scale(1.08);
+}
+
+.tech-marquee-item:hover .tech-marquee-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.85));
+  transform: rotate(12deg);
+}
+
+.tech-marquee-item:hover .tech-marquee-text {
+  color: #ffffff;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Light mode overrides */
+[data-theme="light"] .tech-marquee-text {
+  -webkit-text-stroke: 1.5px rgba(15, 23, 42, 0.25);
+}
+
+[data-theme="light"] .tech-marquee-icon {
+  color: rgba(15, 23, 42, 0.25);
+}
+
+[data-theme="light"] .tech-marquee-item.highlight .tech-marquee-text {
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+[data-theme="light"] .tech-marquee-item.highlight .tech-marquee-icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+[data-theme="light"] .tech-marquee-item:hover .tech-marquee-text {
+  color: var(--accent);
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+[data-theme="light"] .tech-marquee-item:hover .tech-marquee-icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 15px var(--accent-glow));
+}
 
 footer { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-color); color: var(--text-main); }
 .footer-title { font-size: 10vw; font-weight: 900; margin: 0; text-transform: uppercase; line-height: 1; color: var(--text-main); }

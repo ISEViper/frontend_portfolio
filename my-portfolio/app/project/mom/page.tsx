@@ -80,8 +80,8 @@ export default function MoM_page() {
       <div className="custom-cursor" ref={cursorRef}></div>
 
       <nav>
-        <Link href="/" className="logo" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          HKS.DEV
+        <Link href="/" className="logo-nav" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <span className="logo-k">K</span><span className="logo-dot">.</span><span className="logo-hyun">HYUN</span>
         </Link>
         <div className="links">
           <button className="theme-toggle" onClick={toggleTheme} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
