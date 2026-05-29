@@ -184,7 +184,7 @@ export default function MoM_page() {
 
             {/* Frontend Engineering (기술적 기여 및 의사결정) */}
             <div className="mom-detail-section" style={{ marginTop: '40px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)' }}>
                 Frontend Engineering (기술적 기여 및 의사결정)
               </h3>
 

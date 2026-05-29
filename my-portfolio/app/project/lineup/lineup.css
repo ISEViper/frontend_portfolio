@@ -1186,3 +1186,20 @@
   from { transform: scale(0.85); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Row grid responsive layout to match other project pages */
+.lineup-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  align-items: start;
+  margin-bottom: 60px;
+}
+
+@media (max-width: 900px) {
+  .lineup-info-row {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+

@@ -22,8 +22,8 @@ const BOOTHS = [
     bookable: true,
     color: '#ef4444',
     bgColor: '#fff5f5',
-    waitPeople: 130,
-    waitMin: 107,
+    waitPeople: 3,
+    waitMin: 20,
     expPeople: 60,
     intro: '넥스트웨이브는 AI, IoT, 클라우드 기반 기술에 Digital Twin, Metaverse, Robot 등 디지털 기술을 융합해 산업전반의 디지털 전환(DX)을 리딩해 나갑니다.',
     goods: [
@@ -54,7 +54,7 @@ export default function Lineup_page() {
   const [agreed, setAgreed] = useState(false);
 
   // ── 모달 ──
-  const [generalModalOpen, setGeneralModalOpen] = useState(false);
+  const [modalTarget, setModalTarget] = useState<'mobile' | 'web' | null>(null);
   const [clickedFeature, setClickedFeature] = useState('');
 
   // ── 대기열 공유 상태 ──
@@ -67,6 +67,9 @@ export default function Lineup_page() {
   const [calledMyNumber, setCalledMyNumber] = useState(false);
 
   const selectedBooth = BOOTHS.find(b => b.id === selectedBoothId) || BOOTHS[0];
+  const dynamicWaitPeople = selectedBooth.id === 'nexwave' ? queueList.length : selectedBooth.waitPeople;
+  const dynamicWaitMin = selectedBooth.id === 'nexwave' ? (queueList.filter(q => q.status === 'waiting').length * 10) : selectedBooth.waitMin;
+
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -108,7 +111,7 @@ export default function Lineup_page() {
       setMobileScreen('detail');
     } else {
       setClickedFeature(booth.name + ' 부스 예약');
-      setGeneralModalOpen(true);
+      setModalTarget('mobile');
     }
   };
 
@@ -196,28 +199,40 @@ export default function Lineup_page() {
         return (
           <>
             {/* 헤더 */}
-            <div style={{ padding: '18px 12px 6px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0 }}>
-              <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>배치도</div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '5px' }}>
-                <span style={{ fontSize: '9px', color: '#3b4ab3', fontWeight: '700', borderBottom: '2px solid #3b4ab3', paddingBottom: '3px' }}>부스 배치도</span>
-                <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: '600' }}>부스 목록</span>
+            <div style={{ padding: '32px 16px 12px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0 }}>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>배치도</div>
+              <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
+                <span style={{ fontSize: '12px', color: '#3b4ab3', fontWeight: '700', borderBottom: '2px solid #3b4ab3', paddingBottom: '3px' }}>부스 배치도</span>
+                <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>부스 목록</span>
               </div>
             </div>
 
             {/* 배치도 콘텐츠 */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '8px', background: '#ebebeb', display: 'flex', flexDirection: 'column', gap: '5px', paddingBottom: '52px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 12px 64px 12px', background: '#ebebeb', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {/* 층 선택 */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2px' }}>
-                <div style={{ background: '#fff', borderRadius: '8px', padding: '3px 4px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)', display: 'flex', gap: '2px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '4px' }}>
+                <div style={{ background: '#fff', borderRadius: '10px', padding: '4px 6px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)', display: 'flex', gap: '4px' }}>
                   {['3F', '2F', '1F'].map(f => (
-                    <div key={f} style={{ padding: '3px 7px', borderRadius: '4px', fontSize: '8px', fontWeight: '700', background: f === '2F' ? '#0f172a' : 'transparent', color: f === '2F' ? '#fff' : '#94a3b8' }}>{f}</div>
+                    <div key={f}
+                      onClick={() => {
+                        if (f !== '2F') {
+                          setClickedFeature(f + ' 배치도 조회');
+                          setModalTarget('mobile');
+                        }
+                      }}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', background: f === '2F' ? '#0f172a' : 'transparent', color: f === '2F' ? '#fff' : '#94a3b8', cursor: f === '2F' ? 'default' : 'pointer' }}
+                    >
+                      {f}
+                    </div>
                   ))}
                 </div>
               </div>
 
               {/* 부스 그리드 */}
               {[BOOTHS.slice(0, 2), BOOTHS.slice(2, 4), BOOTHS.slice(4, 6)].map((row, ri) => (
-                <div key={ri} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
+                <div key={ri} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   {row.map(booth => (
                     <div
                       key={booth.id}
@@ -227,15 +242,17 @@ export default function Lineup_page() {
                       style={{
                         background: booth.bgColor,
                         border: `2px solid ${booth.color}`,
-                        borderRadius: '10px',
-                        padding: '8px 7px',
+                        borderRadius: '12px',
+                        padding: '12px 10px',
                         cursor: 'pointer',
                         transition: 'transform 0.1s',
                       }}
                     >
-                      <div style={{ fontSize: '7px', fontWeight: '800', color: booth.color, marginBottom: '2px' }}>{booth.code}</div>
-                      <div style={{ fontSize: '11px', fontWeight: '800', color: '#0f172a', lineHeight: '1.2' }}>{booth.name}</div>
-                      <div style={{ fontSize: '7px', color: '#64748b', marginTop: '2px' }}>대기 {booth.waitPeople}명</div>
+                      <div style={{ fontSize: '10px', fontWeight: '800', color: booth.color, marginBottom: '4px' }}>{booth.code}</div>
+                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', lineHeight: '1.2' }}>{booth.name}</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
+                        대기 {booth.id === 'nexwave' ? queueList.length : booth.waitPeople}명
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -248,45 +265,45 @@ export default function Lineup_page() {
       case 'detail':
         return (
           <>
-            {/* 헤더 */}
-            <div style={{ padding: '18px 12px 8px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ArrowLeft size={14} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setMobileScreen('map')} />
-              <span style={{ fontSize: '12px', fontWeight: '700' }}>{selectedBooth.name}</span>
+            {/* Header */}
+            <div style={{ padding: '36px 16px 12px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <ArrowLeft size={18} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setMobileScreen('map')} />
+              <span style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>{selectedBooth.name}</span>
             </div>
 
-            {/* 부스 상세 콘텐츠 */}
-            <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '52px', background: '#f8fafc' }}>
-              {/* 회사 카드 */}
-              <div style={{ background: 'linear-gradient(180deg, #e8eaf6 0%, #f3f4fb 100%)', padding: '24px 16px', textAlign: 'center' }}>
-                <div style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', marginBottom: '4px' }}>{selectedBooth.name}</div>
-                <div style={{ fontSize: '9px', color: '#64748b' }}>{selectedBooth.floor}</div>
+            {/* Booth Detail Content */}
+            <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '76px', background: '#f8fafc' }}>
+              {/* Company Card */}
+              <div style={{ background: 'linear-gradient(180deg, #e8eaf6 0%, #f3f4fb 100%)', padding: '28px 20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '20px', fontWeight: '900', color: '#0f172a', marginBottom: '6px' }}>{selectedBooth.name}</div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>{selectedBooth.floor}</div>
               </div>
 
-              <div style={{ padding: '14px 14px' }}>
-                {/* 소개 */}
-                <div style={{ marginBottom: '14px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', marginBottom: '6px', textAlign: 'center' }}>소개</div>
-                  <p style={{ fontSize: '10px', color: '#475569', lineHeight: '1.7', margin: 0, textAlign: 'center' }}>{selectedBooth.intro}</p>
+              <div style={{ padding: '20px' }}>
+                {/* Introduction */}
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', textAlign: 'center' }}>소개</div>
+                  <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.7', margin: 0, textAlign: 'center' }}>{selectedBooth.intro}</p>
                 </div>
 
-                {/* 부스 현황 */}
-                <div style={{ marginBottom: '14px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', textAlign: 'center' }}>부스 현황</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', marginBottom: '4px' }}>
-                    <Clock size={13} color="#3b4ab3" />
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#3b4ab3' }}>예상 대기 시간: {selectedBooth.waitMin}분</span>
+                {/* Booth Status */}
+                <div style={{ marginBottom: '20px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', marginBottom: '10px', textAlign: 'center' }}>부스 현황</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <Clock size={16} color="#3b4ab3" />
+                    <span style={{ fontSize: '14px', fontWeight: '700', color: '#3b4ab3' }}>예상 대기 시간: {dynamicWaitMin}분</span>
                   </div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textAlign: 'center', lineHeight: '1.8' }}>
-                    예약 인원: {selectedBooth.waitPeople}명<br />
+                  <div style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', lineHeight: '1.8' }}>
+                    예약 인원: {dynamicWaitPeople}명<br />
                     체험 인원: {selectedBooth.expPeople}명
                   </div>
                 </div>
 
-                {/* 굿즈 현황 */}
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a', marginBottom: '6px', textAlign: 'center' }}>굿즈 현황</div>
+                {/* Goods Status */}
+                <div style={{ marginBottom: '20px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', textAlign: 'center' }}>굿즈 현황</div>
                   {selectedBooth.goods.map((g, i) => (
-                    <div key={i} style={{ fontSize: '10px', color: '#475569', textAlign: 'center', lineHeight: '1.8' }}>
+                    <div key={i} style={{ fontSize: '13px', color: '#475569', textAlign: 'center', lineHeight: '1.8' }}>
                       <strong>{g.name}</strong>: <span style={{ color: g.status === '매진' ? '#ef4444' : '#22c55e' }}>{g.status}</span>
                     </div>
                   ))}
@@ -294,13 +311,13 @@ export default function Lineup_page() {
               </div>
             </div>
 
-            {/* 예약하기 버튼 (하단 고정) */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px 14px', background: '#fff', borderTop: '1px solid #f0f0f0', zIndex: 10 }}>
+            {/* Book Button */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '12px 16px', background: '#fff', borderTop: '1px solid #f0f0f0', zIndex: 10 }}>
               <button
                 onClick={() => setMobileScreen('booking')}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#1e2235', color: '#fff', fontSize: '11px', fontWeight: '700', border: 'none', cursor: 'pointer' }}
+                style={{ width: '90%', padding: '12px', borderRadius: '12px', background: '#1e2235', color: '#fff', fontSize: '14px', fontWeight: '700', border: 'none', cursor: 'pointer' }}
               >
                 예약하기
               </button>
@@ -308,87 +325,89 @@ export default function Lineup_page() {
           </>
         );
 
-      /* ─── 예약하기 화면 ─── */
       case 'booking':
         return (
           <>
-            {/* 헤더 */}
-            <div style={{ padding: '18px 12px 8px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ArrowLeft size={14} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setMobileScreen('detail')} />
-              <span style={{ fontSize: '12px', fontWeight: '700' }}>예약하기</span>
+            {/* Header */}
+            <div style={{ padding: '36px 16px 12px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <ArrowLeft size={18} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setMobileScreen('detail')} />
+              <span style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>예약하기</span>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '14px', background: '#fff', paddingBottom: '60px' }}>
-              {/* 예약 내역 */}
-              <div style={{ marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', marginBottom: '4px' }}>예약 내역</div>
-                <div style={{ fontSize: '14px', fontWeight: '900', color: '#0f172a' }}>{selectedBooth.name}</div>
-                <div style={{ fontSize: '10px', color: '#475569' }}>부스 위치: {selectedBooth.floor}</div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 76px', background: '#fff' }}>
+              {/* Booking Info */}
+              <div style={{ marginBottom: '18px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>예약 내역</div>
+                <div style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>{selectedBooth.name}</div>
+                <div style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>부스 위치: {selectedBooth.floor}</div>
               </div>
 
-              {/* 실시간 대기 현황 */}
-              <div style={{ marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>실시간 대기 현황</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px' }}>
+              {/* Real-time Wait Status */}
+              <div style={{ marginBottom: '18px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '8px' }}>실시간 대기 현황</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '8px', color: '#94a3b8' }}>현재 대기 인원</div>
-                    <div style={{ fontSize: '22px', fontWeight: '900', color: '#0f172a' }}>{selectedBooth.waitPeople}명</div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>현재 대기 인원</div>
+                    <div style={{ fontSize: '26px', fontWeight: '900', color: '#0f172a' }}>{dynamicWaitPeople}명</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '8px', color: '#94a3b8' }}>예상 대기 시간</div>
-                    <div style={{ fontSize: '22px', fontWeight: '900', color: '#0f172a' }}>{selectedBooth.waitMin}분</div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>예상 대기 시간</div>
+                    <div style={{ fontSize: '26px', fontWeight: '900', color: '#0f172a' }}>{dynamicWaitMin}분</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '8px', color: '#94a3b8', marginTop: '4px' }}>* 대기 시간은 현장 상황에 따라 유동적으로 변경될 수 있습니다.</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '6px' }}>* 대기 시간은 현장 상황에 따라 변경될 수 있습니다.</div>
               </div>
 
-              {/* 예약자 정보 확인 */}
-              <div style={{ marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', marginBottom: '4px' }}>예약자 정보 확인</div>
-                <div style={{ fontSize: '11px', color: '#0f172a', lineHeight: '1.8' }}>
+              {/* Booker Info */}
+              <div style={{ marginBottom: '18px', borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>예약자 정보 확인</div>
+                <div style={{ fontSize: '14px', color: '#0f172a', lineHeight: '1.8' }}>
                   <strong>예약자:</strong> 청하한 두루미<br />
                   <strong>참여 일자:</strong> 2026.03.06(목)
                 </div>
               </div>
 
-              {/* 대기 및 이용 안내사항 */}
-              <div style={{ marginBottom: '14px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>대기 및 이용 안내사항</div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '9px', color: '#3b4ab3' }}>ⓘ</span>
-                  <span style={{ fontSize: '9px', fontWeight: '700', color: '#0f172a' }}>예약 신청 전 반드시 확인해주세요!</span>
+              {/* Safety Instructions */}
+              <div style={{ marginBottom: '18px', borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '8px' }}>대기 및 이용 안내사항</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '13px', color: '#3b4ab3' }}>ⓘ</span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>예약 신청 전 반드시 확인해주세요!</span>
                 </div>
-                <ul style={{ margin: 0, paddingLeft: '14px', fontSize: '9px', color: '#475569', lineHeight: '1.8' }}>
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: '#475569', lineHeight: '1.8' }}>
                   <li>내 순서가 다가오면 <strong>앱 푸시 및 알림톡</strong>으로 안내해 드립니다.</li>
                   <li>입장 호출 알림 수신 후 <strong>5분 이내</strong>에 부스 입구로 와주세요.</li>
-                  <li>시간 내 미입장 시 대기 예약이 <strong>&apos;자동 취소&apos;</strong> 처리됩니다.</li>
-                  <li>보다 많은 관람객의 체험을 위해 동시 대기 가능한 부스 개수는 <strong>최대 3개</strong>로 제한합니다.</li>
+                  <li>시간 내 미입장 시 대기 예약이 <strong>자동 취소</strong> 처리됩니다.</li>
+                  <li>원활한 체험을 위해 동시 대기 가능 부스는 <strong>최대 3개</strong>로 제한합니다.</li>
                 </ul>
               </div>
 
-              {/* 동의 체크박스 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+              {/* Agreement Checkbox */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
                 <input
                   type="checkbox"
+                  id="agree-checkbox"
                   checked={agreed}
                   onChange={() => setAgreed(!agreed)}
-                  style={{ width: '13px', height: '13px', accentColor: '#3b4ab3' }}
+                  style={{ width: '16px', height: '16px', accentColor: '#3b4ab3', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '9px', color: '#475569' }}>[필수] 위 안내사항을 모두 확인하였으며 동의합니다.</span>
+                <label htmlFor="agree-checkbox" style={{ fontSize: '11px', color: '#475569', cursor: 'pointer', userSelect: 'none' }}>
+                  [필수] 위 안내사항을 모두 확인하였으며 동의합니다.
+                </label>
               </div>
             </div>
 
-            {/* 예약하기 버튼 (하단 고정) */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px 14px', background: '#fff', borderTop: '1px solid #f0f0f0', zIndex: 10 }}>
+            {/* Bottom Button Fixed */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '12px 16px', background: '#fff', borderTop: '1px solid #f0f0f0', zIndex: 10 }}>
               <button
                 onClick={confirmBooking}
                 disabled={!agreed}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 style={{
-                  width: '100%', padding: '10px', borderRadius: '10px',
+                  width: '90%', padding: '12px', borderRadius: '12px',
                   background: agreed ? '#1e2235' : '#d1d5db', color: '#fff',
-                  fontSize: '11px', fontWeight: '700', border: 'none',
+                  fontSize: '14px', fontWeight: '700', border: 'none',
                   cursor: agreed ? 'pointer' : 'not-allowed',
                 }}
               >
@@ -402,19 +421,19 @@ export default function Lineup_page() {
       case 'booked':
         return (
           <>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#fff', textAlign: 'center' }}>
-              <div style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', marginBottom: '16px' }}>예약이 완료되었습니다!</div>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
-                <CheckCircle size={28} color="#22c55e" strokeWidth={2.5} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px 24px', background: '#fff', textAlign: 'center' }}>
+              <div style={{ fontSize: '22px', fontWeight: '900', color: '#0f172a', marginBottom: '20px' }}>예약이 완료되었습니다!</div>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+                <CheckCircle size={36} color="#22c55e" strokeWidth={2.5} />
               </div>
 
-              <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '14px', width: '100%', textAlign: 'left', marginBottom: '12px' }}>
-                <div style={{ fontSize: '10px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>꼭 알아두세요!</div>
-                <ul style={{ margin: 0, paddingLeft: '14px', fontSize: '9px', color: '#475569', lineHeight: '1.8' }}>
+              <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '18px', width: '100%', textAlign: 'left', marginBottom: '20px' }}>
+                <div style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>꼭 알아두세요!</div>
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: '#475569', lineHeight: '1.8' }}>
                   <li>내 순서가 다가오면 <strong>앱 푸시 및 알림톡</strong>으로 안내해 드립니다.</li>
                   <li>입장 호출 알림 수신 후 <strong>5분 이내</strong>에 부스 입구로 와주세요.</li>
-                  <li>시간 내 미입장 시 대기 예약이 <strong>&apos;자동 취소&apos;</strong> 처리됩니다.</li>
-                  <li>보다 많은 관람객의 체험을 위해 동시 대기 가능한 부스 개수는 <strong>최대 3개</strong>로 제한합니다.</li>
+                  <li>시간 내 미입장 시 대기 예약이 <strong>자동 취소</strong> 처리됩니다.</li>
+                  <li>원활한 체험을 위해 동시 대기 가능 부스는 <strong>최대 3개</strong>로 제한합니다.</li>
                 </ul>
               </div>
 
@@ -422,7 +441,7 @@ export default function Lineup_page() {
                 onClick={goToWaiting}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#1e2235', color: '#fff', fontSize: '11px', fontWeight: '700', border: 'none', cursor: 'pointer' }}
+                style={{ width: '100%', padding: '12px', borderRadius: '12px', background: '#1e2235', color: '#fff', fontSize: '14px', fontWeight: '700', border: 'none', cursor: 'pointer' }}
               >
                 예약 내역 조회
               </button>
@@ -430,52 +449,51 @@ export default function Lineup_page() {
           </>
         );
 
-      /* ─── 대기 현황 ─── */
       case 'waiting':
         return (
           <>
-            {/* 헤더 */}
-            <div style={{ padding: '18px 12px 8px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <button onClick={() => setMobileScreen('map')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                <ArrowLeft size={14} color="#94a3b8" />
+            {/* Header */}
+            <div style={{ padding: '36px 16px 12px', background: '#fff', borderBottom: '1px solid #eaeaea', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button onClick={() => setMobileScreen('map')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
+                <ArrowLeft size={18} color="#94a3b8" />
               </button>
-              <span style={{ fontSize: '12px', fontWeight: '700' }}>대기 현황 조회</span>
-              <QrCode size={13} color="#3b4ab3" />
+              <span style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>대기 현황 조회</span>
+              <QrCode size={18} color="#3b4ab3" style={{ cursor: 'pointer' }} onClick={() => { setClickedFeature('QR 코드 스캔'); setModalTarget('mobile'); }} />
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '10px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '52px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Sparkles size={10} color="#3b4ab3" />
-                <span style={{ fontSize: '10px', fontWeight: '700', color: '#1e293b' }}>줄서잇 부스 대기</span>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 76px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={14} color="#3b4ab3" />
+                <span style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>줄서잇 부스 대기</span>
               </div>
-              <div style={{ fontSize: '8px', color: '#64748b' }}>박람회 부스에 오신 것을 환영합니다!</div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>박람회 부스에 오신 것을 환영합니다!</div>
 
-              {/* 대기 티켓 */}
-              <div style={{ background: 'linear-gradient(135deg, #3b4ab3, #2b3a8c)', color: '#fff', borderRadius: '14px', padding: '14px', textAlign: 'center', boxShadow: '0 8px 20px rgba(59,74,179,0.3)' }}>
-                <div style={{ fontSize: '7px', letterSpacing: '1.5px', textTransform: 'uppercase', opacity: 0.7 }}>WAITING TICKET</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: '900', lineHeight: '1', margin: '4px 0' }}>{myQueueNum}</div>
-                <div style={{ width: '60%', margin: '8px auto', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: '8px', opacity: 0.85, marginTop: '4px' }}>
+              {/* Waiting Ticket */}
+              <div style={{ background: 'linear-gradient(135deg, #3b4ab3, #2b3a8c)', color: '#fff', borderRadius: '16px', padding: '20px 16px', textAlign: 'center', boxShadow: '0 8px 20px rgba(59,74,179,0.3)' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', opacity: 0.7 }}>WAITING TICKET</div>
+                <div style={{ fontSize: '2.8rem', fontWeight: '900', lineHeight: '1', margin: '6px 0' }}>{myQueueNum}</div>
+                <div style={{ width: '60%', margin: '10px auto', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: '12px', opacity: 0.85, marginTop: '6px' }}>
                   <div>
-                    <span style={{ display: 'block', fontSize: '6px', opacity: 0.7 }}>내 앞 대기</span>
-                    <strong style={{ fontSize: '12px' }}>{Math.max(0, waitingAhead)} 팀</strong>
+                    <span style={{ display: 'block', fontSize: '10px', opacity: 0.7, marginBottom: '2px' }}>내 앞 대기</span>
+                    <strong style={{ fontSize: '16px' }}>{Math.max(0, waitingAhead)} 팀</strong>
                   </div>
                   <div>
-                    <span style={{ display: 'block', fontSize: '6px', opacity: 0.7 }}>예상 시간</span>
-                    <strong style={{ fontSize: '12px' }}>{Math.max(0, waitingAhead) * 3} 분</strong>
+                    <span style={{ display: 'block', fontSize: '10px', opacity: 0.7, marginBottom: '2px' }}>예상 시간</span>
+                    <strong style={{ fontSize: '16px' }}>{Math.max(0, waitingAhead) * 10} 분</strong>
                   </div>
                 </div>
               </div>
 
-              <div style={{ background: '#fff', borderRadius: '10px', padding: '10px', border: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '5px' }}>
-                  <CheckCircle size={10} color="#22c55e" />
-                  <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#22c55e' }}>대기 완료</span>
+              <div style={{ background: '#fff', borderRadius: '12px', padding: '14px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <CheckCircle size={14} color="#22c55e" />
+                  <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#22c55e' }}>대기 완료</span>
                 </div>
-                <p style={{ fontSize: '8px', color: '#64748b', lineHeight: '1.5', margin: '0 0 8px 0' }}>
+                <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.6', margin: '0 0 12px 0' }}>
                   입장 순서가 되면 푸시 팝업으로 알려드립니다. 부스 근처에서 대기해 주세요.
                 </p>
-                <button onClick={cancelWaiting} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ background: 'transparent', border: '1px solid #cbd5e1', color: '#64748b', borderRadius: '6px', padding: '5px', fontSize: '8px', fontWeight: '700', cursor: 'pointer', width: '100%' }}>
+                <button onClick={cancelWaiting} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ background: 'transparent', border: '1px solid #cbd5e1', color: '#64748b', borderRadius: '8px', padding: '10px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', width: '100%' }}>
                   대기 취소하기
                 </button>
               </div>
@@ -532,14 +550,14 @@ export default function Lineup_page() {
             행 1: [Project Info | Frontend Engineering]
             행 2: [Interactive Preview (모바일 + 웹)]
             ════════════════════════════════════════ */}
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '60px 5vw 80px' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '80px 5vw' }}>
 
-          {/* ─── 행 1: Project Info + Frontend Engineering ─── */}
-          <div className="detail-fade-up" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '48px', alignItems: 'start', marginBottom: '60px' }}>
+          {/* === Row 1: Project Info + Frontend Engineering === */}
+          <div className="detail-fade-up" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '60px', alignItems: 'start', marginBottom: '60px' }}>
 
             {/* PROJECT INFO */}
             <div>
-              <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '30px' }}>
                 Project Info
               </h3>
               <div className="info-group">
@@ -584,8 +602,8 @@ export default function Lineup_page() {
 
             {/* FRONTEND ENGINEERING */}
             <div>
-              <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '24px' }}>
-                Frontend Engineering
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '30px' }}>
+                Frontend Engineering (기술적 기여 및 의사결정)
               </h3>
               <div className="lineup-highlights-container" style={{ marginTop: '0' }}>
                 {engineeringItems.map((h, i) => (
@@ -615,22 +633,22 @@ export default function Lineup_page() {
             onMouseEnter={() => { if (cursorRef.current) cursorRef.current.style.display = 'none'; document.body.style.cursor = 'auto'; }}
             onMouseLeave={() => { if (cursorRef.current) cursorRef.current.style.display = 'block'; document.body.style.cursor = 'none'; }}
           >
-            <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px', marginBottom: '30px' }}>
               Interactive Preview
             </h3>
             <p style={{ fontSize: '12px', color: 'var(--text-sub)', marginBottom: '24px', lineHeight: '1.6' }}>
               배치도에서 <strong style={{ color: 'var(--text-main)' }}>넥스트웨이브</strong> 부스를 클릭하면 예약 플로우를 체험할 수 있습니다. 예약 후 관리자 대시보드에서 호출하면 모바일에 알림이 도착합니다.
             </p>
 
-            {/* ═══ 모바일 + 웹 동시 표시 ═══ */}
+            {/* === 모바일 + 웹 동시 표시 === */}
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', justifyContent: 'center' }}>
 
               {/* ──── 모바일 앱 프레임 ──── */}
               <div style={{
-                width: '220px', minWidth: '220px', height: '480px',
+                width: '360px', minWidth: '360px', height: '720px',
                 backgroundColor: '#f7f7f9',
-                border: '10px solid #1a1a1a',
-                borderRadius: '36px',
+                border: '12px solid #1a1a1a',
+                borderRadius: '40px',
                 overflow: 'hidden',
                 boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
                 position: 'relative',
@@ -639,24 +657,28 @@ export default function Lineup_page() {
                 display: 'flex', flexDirection: 'column', flexShrink: 0,
               }}>
                 {/* 노치 */}
-                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '70px', height: '16px', backgroundColor: '#1a1a1a', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px', zIndex: 20 }} />
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '110px', height: '24px', backgroundColor: '#1a1a1a', borderBottomLeftRadius: '18px', borderBottomRightRadius: '18px', zIndex: 20 }} />
 
                 {/* 화면 내용 */}
                 {renderMobileScreen()}
 
                 {/* 바텀 내비 (map과 waiting 화면에서만) */}
                 {(mobileScreen === 'map' || mobileScreen === 'waiting') && (
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '44px', background: '#fff', borderTop: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 10 }}>
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '56px', background: '#fff', borderTop: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 10, paddingBottom: '4px' }}>
                     {[
-                      { icon: <Home size={14} />, label: '홈', active: mobileScreen === 'waiting' },
-                      { icon: <QrCode size={14} />, label: '예약관리', active: false },
-                      { icon: <MapPin size={14} />, label: '배치도', active: mobileScreen === 'map' },
-                      { icon: <User size={14} />, label: 'MY', active: false },
+                      { icon: <Home size={18} />, label: '홈', active: mobileScreen === 'waiting' },
+                      { icon: <QrCode size={18} />, label: '예약관리', active: false },
+                      { icon: <MapPin size={18} />, label: '배치도', active: mobileScreen === 'map' },
+                      { icon: <User size={18} />, label: 'MY', active: false },
                     ].map((n, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', fontSize: '7px', fontWeight: '600', color: n.active ? '#3b4ab3' : '#94a3b8', cursor: 'pointer' }}
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: '600', color: n.active ? '#3b4ab3' : '#94a3b8', cursor: 'pointer' }}
                         onClick={() => {
                           if (n.label === '배치도') setMobileScreen('map');
                           if (n.label === '홈' && myQueueNum !== null) setMobileScreen('waiting');
+                          if (n.label === '예약관리' || n.label === 'MY') {
+                            setClickedFeature(n.label);
+                            setModalTarget('mobile');
+                          }
                         }}
                       >
                         {n.icon}{n.label}
@@ -667,17 +689,17 @@ export default function Lineup_page() {
 
                 {/* 호출 알림 팝업 */}
                 {calledMyNumber && (
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(10,10,20,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999, padding: '16px' }}>
-                    <div style={{ background: '#fff', borderRadius: '18px', padding: '20px 16px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 10px 30px rgba(10,15,40,0.2)' }}>
-                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#eff2fc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                        <Bell size={20} color="#3b4ab3" strokeWidth={2.5} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: '28px', background: 'rgba(10,10,20,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999, padding: '16px' }}>
+                    <div style={{ background: '#fff', borderRadius: '18px', padding: '24px 20px', width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 10px 30px rgba(10,15,40,0.2)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#eff2fc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                        <Bell size={24} color="#3b4ab3" strokeWidth={2.5} />
                       </div>
-                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#1a1a1a', marginBottom: '8px' }}>입장 호출 알림</div>
-                      <div style={{ fontSize: '11px', color: '#4a4a4a', lineHeight: '1.6', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a', marginBottom: '8px' }}>입장 호출 알림</div>
+                      <div style={{ fontSize: '13px', color: '#4a4a4a', lineHeight: '1.6', marginBottom: '16px' }}>
                         고객님 차례가 되었습니다!<br />
-                        대기번호 <span style={{ color: '#3b4ab3', fontWeight: '700', background: '#eff2fc', padding: '1px 5px', borderRadius: '4px' }}>{myQueueNum}</span>번 고객님은<br />즉시 부스로 입장해 주세요.
+                        대기번호 <span style={{ color: '#3b4ab3', fontWeight: '700', background: '#eff2fc', padding: '2px 6px', borderRadius: '4px' }}>{myQueueNum}</span>번 고객님은<br />즉시 부스로 입장해 주세요.
                       </div>
-                      <button onClick={acceptCall} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#3b4ab3', color: '#fff', fontSize: '11px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={acceptCall} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: '#3b4ab3', color: '#fff', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
                         확인 및 입장 완료
                       </button>
                     </div>
@@ -685,21 +707,21 @@ export default function Lineup_page() {
                 )}
 
                 {/* 범용 모달 (bookable 아닌 부스) */}
-                {generalModalOpen && (
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(10,10,20,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999, padding: '16px' }}>
-                    <div style={{ background: '#fff', borderRadius: '18px', padding: '20px 16px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 10px 30px rgba(10,15,40,0.2)' }}>
-                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#eff2fc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                        <Sparkles size={20} color="#3b4ab3" strokeWidth={2.5} />
+                {modalTarget === 'mobile' && (
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: '28px', background: 'rgba(10,10,20,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999, padding: '16px' }}>
+                    <div style={{ background: '#fff', borderRadius: '18px', padding: '24px 20px', width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 10px 30px rgba(10,15,40,0.2)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#eff2fc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                        <Sparkles size={24} color="#3b4ab3" strokeWidth={2.5} />
                       </div>
-                      <div style={{ fontSize: '14px', fontWeight: '800', color: '#1a1a1a', marginBottom: '8px' }}>안내</div>
-                      <div style={{ fontSize: '11px', color: '#4a4a4a', lineHeight: '1.6', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a', marginBottom: '8px' }}>안내</div>
+                      <div style={{ fontSize: '13px', color: '#4a4a4a', lineHeight: '1.6', marginBottom: '20px' }}>
                         실제 서비스 환경에서 안정적으로 구현을 완료한<br />
                         <span style={{ color: '#3b4ab3', fontWeight: '700' }}>&apos;{clickedFeature}&apos;</span> 기능입니다.<br />
-                        <span style={{ display: 'block', marginTop: '8px' }}>
+                        <span style={{ display: 'block', marginTop: '10px', fontSize: '12px', color: '#64748b' }}>
                           아키텍처 설계와 성능 최적화를 깊이 있게 고민했던 이 개발 경험을 실무 프로젝트에서 가치 있게 증명해 보이겠습니다.
                         </span>
                       </div>
-                      <button onClick={() => setGeneralModalOpen(false)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#3b4ab3', color: '#fff', fontSize: '11px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => setModalTarget(null)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: '#3b4ab3', color: '#fff', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
                         확인
                       </button>
                     </div>
@@ -708,7 +730,7 @@ export default function Lineup_page() {
               </div>
 
               {/* SYNC 인디케이터 */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', minWidth: '24px', marginTop: '160px', opacity: 0.5 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', minWidth: '24px', marginTop: '280px', opacity: 0.5 }}>
                 <div style={{ width: '1px', height: '30px', background: 'linear-gradient(to bottom, transparent, #3b4ab3)' }} />
                 <div style={{ fontSize: '7px', fontWeight: '800', color: '#3b4ab3', letterSpacing: '0.08em' }}>SYNC</div>
                 <div style={{ width: '1px', height: '30px', background: 'linear-gradient(to top, transparent, #3b4ab3)' }} />
@@ -716,12 +738,13 @@ export default function Lineup_page() {
 
               {/* ──── 웹 관리자 대시보드 ──── */}
               <div style={{
-                flex: 1, minWidth: 0, height: '480px',
+                flex: 1, minWidth: 0, height: '720px',
                 border: '1px solid #e2e8f0', borderRadius: '14px',
                 overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
                 display: 'flex', flexDirection: 'column',
                 fontFamily: 'system-ui, -apple-system, sans-serif',
                 backgroundColor: '#ffffff',
+                position: 'relative',
               }}>
 
                 {/* 대시보드 헤더 */}
@@ -741,14 +764,29 @@ export default function Lineup_page() {
                     <div style={{ padding: '8px', borderRadius: '6px', background: '#2d3452', color: '#fff', fontSize: '10px', fontWeight: '700', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                       <BarChart2 size={13} /><span>대시보드</span>
                     </div>
-                    <div style={{ padding: '8px', borderRadius: '6px', color: '#64748b', fontSize: '10px', fontWeight: '600', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    <div
+                      onClick={() => { setClickedFeature('사용자 통계'); setModalTarget('web'); }}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ padding: '8px', borderRadius: '6px', color: '#64748b', fontSize: '10px', fontWeight: '600', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '3px' }}
+                    >
                       <User size={13} /><span>사용자 통계</span>
                     </div>
-                    <div style={{ padding: '8px', borderRadius: '6px', color: '#64748b', fontSize: '10px', fontWeight: '600', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    <div
+                      onClick={() => { setClickedFeature('환경 설정'); setModalTarget('web'); }}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ padding: '8px', borderRadius: '6px', color: '#64748b', fontSize: '10px', fontWeight: '600', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '3px' }}
+                    >
                       <Settings size={13} /><span>환경 설정</span>
                     </div>
                     <div style={{ marginTop: 'auto', borderTop: '1px solid #2d3452', paddingTop: '8px' }}>
-                      <button style={{ background: '#2d3452', border: 'none', borderRadius: '5px', color: '#94a3b8', fontSize: '8px', padding: '5px 6px', width: '100%', cursor: 'pointer', lineHeight: '1.4' }}>
+                      <button
+                        onClick={() => { setClickedFeature('총괄 관리자 문의'); setModalTarget('web'); }}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        style={{ background: '#2d3452', border: 'none', borderRadius: '5px', color: '#94a3b8', fontSize: '8px', padding: '5px 6px', width: '100%', cursor: 'pointer', lineHeight: '1.4' }}
+                      >
                         총괄 관리자에게<br />문의하기
                       </button>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
@@ -778,8 +816,22 @@ export default function Lineup_page() {
                           {queueList.filter(q => q.status === 'waiting').length * 10}분
                         </div>
                         <div style={{ display: 'flex', gap: '4px', marginTop: '4px', justifyContent: 'flex-end' }}>
-                          <span style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa', borderRadius: '4px', padding: '2px 6px', fontSize: '8px', fontWeight: '700', cursor: 'pointer' }}>⊙ 운영중지</span>
-                          <span style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: '4px', padding: '2px 6px', fontSize: '8px', fontWeight: '700', cursor: 'pointer' }}>⊗ 운영종료</span>
+                          <span
+                            onClick={() => { setClickedFeature('부스 운영 중지'); setModalTarget('web'); }}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa', borderRadius: '4px', padding: '2px 6px', fontSize: '8px', fontWeight: '700', cursor: 'pointer' }}
+                          >
+                            ⊙ 운영중지
+                          </span>
+                          <span
+                            onClick={() => { setClickedFeature('부스 운영 종료'); setModalTarget('web'); }}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: '4px', padding: '2px 6px', fontSize: '8px', fontWeight: '700', cursor: 'pointer' }}
+                          >
+                            ⊗ 운영종료
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -838,6 +890,28 @@ export default function Lineup_page() {
                     </div>
                   </div>
                 </div>
+
+                {/* Local Web Modal */}
+                {modalTarget === 'web' && (
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(10,10,20,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999, padding: '24px' }}>
+                    <div style={{ background: '#fff', borderRadius: '18px', padding: '32px 24px', maxWidth: '420px', width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 15px 35px rgba(10,15,40,0.25)' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#eff2fc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                        <Sparkles size={28} color="#3b4ab3" strokeWidth={2.5} />
+                      </div>
+                      <div style={{ fontSize: '18px', fontWeight: '800', color: '#1a1a1a', marginBottom: '10px' }}>안내</div>
+                      <div style={{ fontSize: '14px', color: '#4b5563', lineHeight: '1.6', marginBottom: '24px' }}>
+                        실제 서비스 환경에서 안정적으로 구현을 완료한<br />
+                        <span style={{ color: '#3b4ab3', fontWeight: '700' }}>&apos;{clickedFeature}&apos;</span> 기능입니다.<br />
+                        <span style={{ display: 'block', marginTop: '12px', fontSize: '13px', color: '#6b7280' }}>
+                          아키텍처 설계와 성능 최적화를 깊이 있게 고민했던 이 개발 경험을 실무 프로젝트에서 가치 있게 증명해 보이겠습니다.
+                        </span>
+                      </div>
+                      <button onClick={() => setModalTarget(null)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ width: '100%', padding: '12px', borderRadius: '12px', background: '#3b4ab3', color: '#fff', fontSize: '14px', fontWeight: '700', border: 'none', cursor: 'pointer' }}>
+                        확인
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

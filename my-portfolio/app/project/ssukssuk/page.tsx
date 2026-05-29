@@ -233,7 +233,7 @@ export default function SsukSsuk_page() {
 
             {/* Frontend Engineering */}
             <div className="ssuk-highlights-container" style={{ marginTop: '40px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
                 Frontend Engineering (기술적 기여 및 의사결정)
               </h3>
 
