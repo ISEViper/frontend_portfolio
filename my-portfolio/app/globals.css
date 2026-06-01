@@ -363,7 +363,7 @@ nav .links a:hover { color: var(--accent); }
 
 .project-logo-container { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; transition: all 0.5s; }
 .project-logo-text { font-size: 4rem; font-weight: 900; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 0 var(--card-bg), 0 10px 20px rgba(0,0,0,0.5); }
-.project-logo-sub { font-size: 1.1rem; font-weight: 700; color: var(--text-sub); margin-top: 10px; letter-spacing: 5px; text-transform: uppercase; }
+.project-logo-sub { font-size: 1.1rem; font-weight: 700; color: var(--text-sub); margin-top: 10px; letter-spacing: 5px; text-transform: uppercase; text-align: center; }
 .project-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.1); transition: all 0.6s; z-index: 1; filter: brightness(0.4) contrast(1.2); }
 
 .project-card:hover .project-logo-container { opacity: 0; transform: scale(0.9); }

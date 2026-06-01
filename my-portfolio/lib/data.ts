@@ -37,7 +37,6 @@ export const projectData = [
     ],
     previewType: "responsive"
   },
-
   {
     id: 3,
     slug: "ssukssuk",
@@ -56,5 +55,22 @@ export const projectData = [
       "Jenkins CI/CD 자동화 빌드 및 Prometheus + Grafana + Loki 모니터링 경보(12가지 규칙) 인프라 구축"
     ],
     previewType: "mobile"
+  },
+  {
+    id: 4,
+    slug: "didim",
+    title: "DIDIM",
+    year: "2025.11 - 2025.12",
+    logo: "DIDIM",
+    logoDesc: "AI Financial Recommendation",
+    image: "/projects/didim/didim_App_Icon.png",
+    role: "Frontend Developer & UI/UX Designer",
+    tech: ["Vue.js", "Django", "DRF(Django REST Framework)", "SQLite", "Axios", "Gemini 2.5 Pro", "Docker", "AWS"],
+    overview: "AI 기반 사용자 맞춤형 금융 상품 및 자산 분배 추천 플랫폼",
+    highlights: [
+      "Gemini API를 활용한 실시간 주식/ETF 심층 분석 및 투자 코멘트 제공",
+      "금융감독원 Open API 기반 전국 은행 예적금 데이터 실시간 통합 검색"
+    ],
+    previewType: "web"
   }
 ];
