@@ -65,7 +65,7 @@ export const projectData = [
     logoDesc: "AI Financial Recommendation",
     image: "/projects/didim/didim_App_Icon.png",
     role: "Frontend Developer & UI/UX Designer",
-    tech: ["Vue.js", "Django", "DRF(Django REST Framework)", "SQLite", "Axios", "Gemini 2.5 Pro", "Docker", "AWS"],
+    tech: ["Vue.js", "Django", "DRF(Django REST Framework)", "SQLite", "Axios", "Tailwind CSS", "Gemini 2.5 Pro", "Docker", "AWS"],
     overview: "AI 기반 사용자 맞춤형 금융 상품 및 자산 분배 추천 플랫폼",
     highlights: [
       "Gemini API를 활용한 실시간 주식/ETF 심층 분석 및 투자 코멘트 제공",
